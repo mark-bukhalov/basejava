@@ -32,6 +32,11 @@ public class MainTestArrayStorage {
         ARRAY_STORAGE.clear();
         printAll();
 
+        Resume r4 = new Resume();
+        r4.setUuid("uuid4");
+
+        ARRAY_STORAGE.update(r4);
+
         System.out.println("Size: " + ARRAY_STORAGE.size());
     }
 
