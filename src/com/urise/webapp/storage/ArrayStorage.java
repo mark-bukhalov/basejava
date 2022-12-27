@@ -7,29 +7,13 @@ import com.urise.webapp.model.Resume;
  */
 public class ArrayStorage extends AbstractArrayStorage {
 
-
-    public void save(Resume r) {
-        int index = findIndex(r.getUuid());
-        if (size >= STORAGE_LIMIT) {
-            System.out.println("Хранилище переполненно");
-        }
-        if (index > 0) {
-            System.out.printf("Резюме с uuid %s уже существует%n", r.getUuid());
-        } else {
-            STORAGE[size] = r;
-            size++;
-        }
+    protected void insertResume(Resume r, int index) {
+        STORAGE[size] = r;
     }
 
-    public void delete(String uuid) {
-        int index = findIndex(uuid);
-        if (index >= 0) {
-            STORAGE[index] = STORAGE[size - 1];
-            STORAGE[size - 1] = null;
-            size--;
-        } else {
-            printErorResumeNotFound(uuid);
-        }
+    protected void deleteResume(int index) {
+        STORAGE[index] = STORAGE[size - 1];
+        STORAGE[size - 1] = null;
     }
 
     protected int findIndex(String uuid) {
