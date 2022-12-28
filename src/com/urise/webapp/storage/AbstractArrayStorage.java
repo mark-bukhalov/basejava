@@ -1,5 +1,8 @@
 package com.urise.webapp.storage;
 
+import com.urise.webapp.exception.ExistStorageException;
+import com.urise.webapp.exception.NotExistStorageException;
+import com.urise.webapp.exception.StorageException;
 import com.urise.webapp.model.Resume;
 
 import java.util.Arrays;
@@ -21,10 +24,10 @@ public abstract class AbstractArrayStorage implements Storage {
     final public void save(Resume r) {
         int index = findIndex(r.getUuid());
         if (size >= STORAGE_LIMIT) {
-            System.out.println("Хранилище переполненно");
+            throw new StorageException("Хранилище переполнено", r.getUuid());
         }
         if (index > 0) {
-            System.out.printf("Резюме с uuid %s уже существует%n", r.getUuid());
+            throw new ExistStorageException(r.getUuid());
         } else {
             insertResume(r, index);
             size++;
@@ -36,8 +39,7 @@ public abstract class AbstractArrayStorage implements Storage {
         if (index >= 0) {
             return STORAGE[index];
         } else {
-            printErorResumeNotFound(uuid);
-            return null;
+            throw new NotExistStorageException(uuid);
         }
     }
 
@@ -46,7 +48,7 @@ public abstract class AbstractArrayStorage implements Storage {
         if (index >= 0) {
             STORAGE[index] = resume;
         } else {
-            printErorResumeNotFound(resume.getUuid());
+            throw new NotExistStorageException(resume.getUuid());
         }
     }
 
@@ -56,16 +58,12 @@ public abstract class AbstractArrayStorage implements Storage {
             deleteResume(index);
             size--;
         } else {
-            printErorResumeNotFound(uuid);
+            throw new NotExistStorageException(uuid);
         }
     }
 
     public Resume[] getAll() {
-        return Arrays.copyOf(STORAGE, 7);
-    }
-
-    protected void printErorResumeNotFound(String uuid) {
-        System.out.printf("Резюме с uuid %s не найдено%n", uuid);
+        return Arrays.copyOf(STORAGE, size);
     }
 
     protected abstract void insertResume(Resume r, int index);
