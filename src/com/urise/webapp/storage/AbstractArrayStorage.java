@@ -61,7 +61,7 @@ public abstract class AbstractArrayStorage implements Storage {
     }
 
     public Resume[] getAll() {
-        return Arrays.copyOf(STORAGE, size);
+        return Arrays.copyOf(STORAGE, 7);
     }
 
     protected void printErorResumeNotFound(String uuid) {
