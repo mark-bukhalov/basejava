@@ -18,7 +18,7 @@ public abstract class AbstractArrayStorage implements Storage {
         return size;
     }
 
-    public void save(Resume r) {
+    final public void save(Resume r) {
         int index = findIndex(r.getUuid());
         if (size >= STORAGE_LIMIT) {
             System.out.println("Хранилище переполненно");
@@ -31,10 +31,7 @@ public abstract class AbstractArrayStorage implements Storage {
         }
     }
 
-
-    protected abstract void insertResume(Resume r, int index);
-
-    public Resume get(String uuid) {
+    final public Resume get(String uuid) {
         int index = findIndex(uuid);
         if (index >= 0) {
             return STORAGE[index];
@@ -44,7 +41,7 @@ public abstract class AbstractArrayStorage implements Storage {
         }
     }
 
-    public void update(Resume resume) {
+    final public void update(Resume resume) {
         int index = findIndex(resume.getUuid());
         if (index >= 0) {
             STORAGE[index] = resume;
@@ -53,7 +50,7 @@ public abstract class AbstractArrayStorage implements Storage {
         }
     }
 
-    public void delete(String uuid) {
+    final public void delete(String uuid) {
         int index = findIndex(uuid);
         if (index >= 0) {
             deleteResume(index);
@@ -63,10 +60,6 @@ public abstract class AbstractArrayStorage implements Storage {
         }
     }
 
-    protected abstract void deleteResume(int index);
-
-    protected abstract int findIndex(String uuid);
-
     public Resume[] getAll() {
         return Arrays.copyOf(STORAGE, size);
     }
@@ -74,4 +67,10 @@ public abstract class AbstractArrayStorage implements Storage {
     protected void printErorResumeNotFound(String uuid) {
         System.out.printf("Резюме с uuid %s не найдено%n", uuid);
     }
+
+    protected abstract void insertResume(Resume r, int index);
+
+    protected abstract void deleteResume(int index);
+
+    protected abstract int findIndex(String uuid);
 }
