@@ -8,7 +8,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-public class AbstractArrayStorageTest {
+public abstract class AbstractArrayStorageTest {
     private final Storage STORAGE;
 
     private static final String UUID_1 = "uuid1";
@@ -55,7 +55,7 @@ public class AbstractArrayStorageTest {
     }
 
     @Test(expected = ExistStorageException.class)
-    public void alreadyExist() {
+    public void saveExist() {
         STORAGE.save(new Resume(UUID_1));
     }
 
