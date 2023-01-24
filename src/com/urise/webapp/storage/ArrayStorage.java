@@ -16,6 +16,16 @@ public class ArrayStorage extends AbstractArrayStorage {
         STORAGE[size - 1] = null;
     }
 
+    @Override
+    protected boolean isExist(Resume r) {
+        for (int i = 0; i < size; i++) {
+            if (STORAGE[i].getUuid().equals(r.getUuid())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     protected int findIndex(String uuid) {
         for (int i = 0; i < size; i++) {
             if (STORAGE[i].getUuid().equals(uuid)) {
