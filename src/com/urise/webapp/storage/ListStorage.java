@@ -1,15 +1,13 @@
 package com.urise.webapp.storage;
 
 import com.urise.webapp.model.Resume;
-
 import java.util.ArrayList;
 
 public class ListStorage extends AbstractStorage {
-
     private final ArrayList<Resume> STORAGE = new ArrayList<>();
 
     @Override
-    protected int findIndex(String uuid) {
+    protected Object findSearchKey(String uuid) {
         int index = 0;
         for (Resume r : STORAGE) {
             if (r.getUuid().equals(uuid)) {
@@ -21,28 +19,28 @@ public class ListStorage extends AbstractStorage {
     }
 
     @Override
-    protected boolean isExist(Resume r) {
-        return STORAGE.contains(r);
+    protected boolean isExist(Object searchKey) {
+        return (Integer) searchKey >= 0;
     }
 
     @Override
-    protected void storageSave(Resume r) {
+    protected void doSave(Resume r, Object searchKey) {
         STORAGE.add(r);
     }
 
     @Override
-    protected Resume storageGet(int index) {
-        return STORAGE.get(index);
+    protected Resume doGet(Object searchKey) {
+        return STORAGE.get((Integer) searchKey);
     }
 
     @Override
-    protected void storageUpdate(int index, Resume r) {
-        STORAGE.set(index, r);
+    protected void doUpdate(Resume r, Object searchKey) {
+        STORAGE.set((Integer) searchKey, r);
     }
 
     @Override
-    protected void storageDelete(int index) {
-        STORAGE.remove(index);
+    protected void doDelete(Object searchKey) {
+        STORAGE.remove((int)searchKey);
     }
 
     @Override

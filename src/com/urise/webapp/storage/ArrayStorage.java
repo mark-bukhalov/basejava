@@ -7,26 +7,16 @@ import com.urise.webapp.model.Resume;
  */
 public class ArrayStorage extends AbstractArrayStorage {
 
-    protected void insertResume(Resume r, int index) {
+    protected void insertResume(Resume r, Integer index) {
         STORAGE[size] = r;
     }
 
-    protected void deleteResume(int index) {
+    protected void deleteResume(Integer index) {
         STORAGE[index] = STORAGE[size - 1];
         STORAGE[size - 1] = null;
     }
 
-    @Override
-    protected boolean isExist(Resume r) {
-        for (int i = 0; i < size; i++) {
-            if (STORAGE[i].getUuid().equals(r.getUuid())) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    protected int findIndex(String uuid) {
+    protected Object findSearchKey(String uuid) {
         for (int i = 0; i < size; i++) {
             if (STORAGE[i].getUuid().equals(uuid)) {
                 return i;
@@ -34,6 +24,4 @@ public class ArrayStorage extends AbstractArrayStorage {
         }
         return -1;
     }
-
-
 }
