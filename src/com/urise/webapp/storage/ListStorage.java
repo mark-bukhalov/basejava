@@ -1,6 +1,7 @@
 package com.urise.webapp.storage;
 
 import com.urise.webapp.model.Resume;
+
 import java.util.ArrayList;
 
 public class ListStorage extends AbstractStorage {
@@ -40,7 +41,7 @@ public class ListStorage extends AbstractStorage {
 
     @Override
     protected void doDelete(Object searchKey) {
-        STORAGE.remove((int)searchKey);
+        STORAGE.remove((int) searchKey);
     }
 
     @Override
