@@ -4,15 +4,18 @@ import com.urise.webapp.exception.StorageException;
 import com.urise.webapp.model.Resume;
 
 import java.util.Arrays;
+import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 public abstract class AbstractArrayStorage extends AbstractStorage {
     protected static final int STORAGE_LIMIT = 10000;
-    protected final Resume[] STORAGE = new Resume[STORAGE_LIMIT];
+    protected final Resume[] storage = new Resume[STORAGE_LIMIT];
     protected int size;
 
     @Override
     protected Resume doGet(Object searchKey) {
-        return STORAGE[(Integer) searchKey];
+        return storage[(Integer) searchKey];
     }
 
     @Override
@@ -27,7 +30,7 @@ public abstract class AbstractArrayStorage extends AbstractStorage {
 
     @Override
     protected void doUpdate(Resume r, Object searchKey) {
-        STORAGE[(Integer) searchKey] = r;
+        storage[(Integer) searchKey] = r;
     }
 
     @Override
@@ -36,12 +39,13 @@ public abstract class AbstractArrayStorage extends AbstractStorage {
         size--;
     }
 
-    public Resume[] getAll() {
-        return Arrays.copyOf(STORAGE, size);
+    @Override
+    protected List<Resume> getListResume() {
+        return Arrays.stream(storage).filter(Objects::nonNull).collect(Collectors.toList());
     }
 
     public void clear() {
-        Arrays.fill(STORAGE, 0, size, null);
+        Arrays.fill(storage, 0, size, null);
         size = 0;
     }
 

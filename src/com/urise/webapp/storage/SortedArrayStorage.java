@@ -9,20 +9,20 @@ public class SortedArrayStorage extends AbstractArrayStorage {
     @Override
     protected void insertResume(Resume r, Integer index) {
         int indexIns = (index + 1) * -1;
-        System.arraycopy(STORAGE, indexIns, STORAGE, indexIns + 1, size - indexIns);
-        STORAGE[indexIns] = r;
+        System.arraycopy(storage, indexIns, storage, indexIns + 1, size - indexIns);
+        storage[indexIns] = r;
 
     }
 
     @Override
     protected void deleteResume(Integer index) {
-        System.arraycopy(STORAGE, index + 1, STORAGE, index, size - index - 1);
-        STORAGE[size - 1] = null;
+        System.arraycopy(storage, index + 1, storage, index, size - index - 1);
+        storage[size - 1] = null;
     }
 
     @Override
     protected Object findSearchKey(String uuid) {
         Resume searchKey = new Resume(uuid);
-        return Arrays.binarySearch(STORAGE, 0, size, searchKey);
+        return Arrays.binarySearch(storage, 0, size, searchKey);
     }
 }
