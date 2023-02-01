@@ -40,7 +40,7 @@ public abstract class AbstractArrayStorage extends AbstractStorage {
     }
 
     @Override
-    protected List<Resume> getListResume() {
+    protected List<Resume> doCopyAll() {
         return Arrays.stream(storage).filter(Objects::nonNull).collect(Collectors.toList());
     }
 

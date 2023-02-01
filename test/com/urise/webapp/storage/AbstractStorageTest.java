@@ -36,9 +36,9 @@ public abstract class AbstractStorageTest {
     @Before
     public void setUp() {
         STORAGE.clear();
-        STORAGE.save(new Resume(UUID_1));
-        STORAGE.save(new Resume(UUID_2));
-        STORAGE.save(new Resume(UUID_3));
+        STORAGE.save(RESUME_1);
+        STORAGE.save(RESUME_2);
+        STORAGE.save(RESUME_3);
     }
 
     @Test
@@ -63,7 +63,7 @@ public abstract class AbstractStorageTest {
 
     @Test(expected = ExistStorageException.class)
     public void saveExist() {
-        STORAGE.save(new Resume(UUID_1));
+        STORAGE.save(new Resume(UUID_1,NAME_1));
     }
 
     @Test
@@ -89,7 +89,7 @@ public abstract class AbstractStorageTest {
 
     @Test(expected = NotExistStorageException.class)
     public void updateNotExist() {
-        Resume resumeUpdate = new Resume(UUID_NOT_EXIST);
+        Resume resumeUpdate = new Resume(UUID_NOT_EXIST,"Name");
         STORAGE.update(resumeUpdate);
     }
 
