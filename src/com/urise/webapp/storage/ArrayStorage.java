@@ -16,7 +16,7 @@ public class ArrayStorage extends AbstractArrayStorage {
         storage[size - 1] = null;
     }
 
-    protected Object findSearchKey(String uuid) {
+    protected Integer findSearchKey(String uuid) {
         for (int i = 0; i < size; i++) {
             if (storage[i].getUuid().equals(uuid)) {
                 return i;
