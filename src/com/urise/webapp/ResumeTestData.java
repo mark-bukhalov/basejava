@@ -136,7 +136,7 @@ public class ResumeTestData {
                     for (Company c : companies) {
                         System.out.println(c.getName() + " " + c.getUrl());
                         for (Period p : c.getPeriods()) {
-                            System.out.println( p.getBeginDate() + " " + p.getEndDate());
+                            System.out.println(p.getBeginDate() + " " + p.getEndDate());
                             System.out.println(p.getName());
                             System.out.println(p.getDescription());
                         }
