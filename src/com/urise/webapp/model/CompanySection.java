@@ -14,4 +14,18 @@ public class CompanySection extends AbstractSection {
         companies.add(company);
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        CompanySection that = (CompanySection) o;
+
+        return companies.equals(that.companies);
+    }
+
+    @Override
+    public int hashCode() {
+        return companies.hashCode();
+    }
 }

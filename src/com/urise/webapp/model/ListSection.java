@@ -17,4 +17,19 @@ public class ListSection extends AbstractSection {
     public String getValue(int index) {
         return values.get(index);
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        ListSection that = (ListSection) o;
+
+        return values.equals(that.values);
+    }
+
+    @Override
+    public int hashCode() {
+        return values.hashCode();
+    }
 }

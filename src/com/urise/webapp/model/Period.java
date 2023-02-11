@@ -55,4 +55,26 @@ public class Period {
     public void setEndDate(LocalDate endDate) {
         this.endDate = endDate;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Period period = (Period) o;
+
+        if (!name.equals(period.name)) return false;
+        if (!description.equals(period.description)) return false;
+        if (!beginDate.equals(period.beginDate)) return false;
+        return endDate.equals(period.endDate);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = name.hashCode();
+        result = 31 * result + description.hashCode();
+        result = 31 * result + beginDate.hashCode();
+        result = 31 * result + endDate.hashCode();
+        return result;
+    }
 }
