@@ -5,10 +5,7 @@ import com.urise.webapp.model.Resume;
 
 import java.io.*;
 
-public class ObjectStreamPathStorage extends AbstractPathStorage {
-    public ObjectStreamPathStorage(File dir) {
-        super(dir);
-    }
+public class ObjectResumeSerializer extends AbstractResumeSerializer {
 
     @Override
     protected void doWrite(Resume r, OutputStream os) throws IOException {

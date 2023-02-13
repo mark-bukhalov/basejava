@@ -11,14 +11,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-public abstract class AbstractPathStorage extends AbstractStorage<Path> {
-    private Path directory;
+public class PathStorage extends AbstractStorage<Path> {
+    private final AbstractResumeSerializer serializer;
+    private final Path directory;
 
-    protected abstract void doWrite(Resume r, OutputStream os) throws IOException;
-
-    protected abstract Resume doRead(InputStream is) throws IOException;
-
-    protected AbstractPathStorage(File file) {
+    protected PathStorage(File file, AbstractResumeSerializer serializer) {
+        this.serializer = serializer;
         directory = Paths.get(file.getAbsolutePath());
         Objects.requireNonNull(directory, "directory must not be null");
         if (!Files.isDirectory(directory) || !Files.isWritable(directory)) {
@@ -102,5 +100,13 @@ public abstract class AbstractPathStorage extends AbstractStorage<Path> {
             throw new RuntimeException(e);
         }
         return list;
+    }
+
+    protected void doWrite(Resume r, OutputStream os) throws IOException {
+        serializer.doWrite(r, os);
+    }
+
+    protected Resume doRead(InputStream is) throws IOException {
+        return serializer.doRead(is);
     }
 }
