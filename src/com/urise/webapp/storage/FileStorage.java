@@ -3,6 +3,7 @@ package com.urise.webapp.storage;
 
 import com.urise.webapp.exception.StorageException;
 import com.urise.webapp.model.Resume;
+import com.urise.webapp.storage.strategy.AbstractResumeSerializer;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -27,10 +28,7 @@ public class FileStorage extends AbstractStorage<File> {
 
     @Override
     public void clear() {
-        File[] files = directory.listFiles();
-        if (files == null) {
-            throw new StorageException("IO error", null);
-        }
+        File[] files = getListFiles();
         for (File file : files) {
             doDelete(file);
         }
@@ -38,12 +36,10 @@ public class FileStorage extends AbstractStorage<File> {
 
     @Override
     public int size() {
-        String[] list = directory.list();
-        if (list == null) {
-            throw new StorageException("IO error", null);
-        }
-        return list.length;
+        File[] files = getListFiles();
+        return files.length;
     }
+
 
     @Override
     protected File findSearchKey(String uuid) {
@@ -93,11 +89,8 @@ public class FileStorage extends AbstractStorage<File> {
 
     @Override
     protected List<Resume> doCopyAll() {
-        File[] files = directory.listFiles();
+        File[] files = getListFiles();
         List<Resume> resumeList = new ArrayList<>();
-        if (files == null) {
-            throw new StorageException("IO error", null);
-        }
         for (File file : files) {
             Resume r = doGet(file);
             resumeList.add(r);
@@ -111,5 +104,13 @@ public class FileStorage extends AbstractStorage<File> {
 
     protected Resume doRead(InputStream is) throws IOException {
         return serializer.doRead(is);
+    }
+
+    private File[] getListFiles() {
+        File[] files = directory.listFiles();
+        if (files == null) {
+            throw new StorageException("IO error", null);
+        }
+        return files;
     }
 }

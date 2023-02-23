@@ -2,6 +2,7 @@ package com.urise.webapp.storage;
 
 import com.urise.webapp.exception.StorageException;
 import com.urise.webapp.model.Resume;
+import com.urise.webapp.storage.strategy.AbstractResumeSerializer;
 
 import java.io.*;
 import java.nio.file.Files;
@@ -10,6 +11,7 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Stream;
 
 public class PathStorage extends AbstractStorage<Path> {
     private final AbstractResumeSerializer serializer;
@@ -26,25 +28,18 @@ public class PathStorage extends AbstractStorage<Path> {
 
     @Override
     public void clear() {
-        try {
-            Files.list(directory).forEach(this::doDelete);
-        } catch (IOException e) {
-            throw new StorageException("Path delete error", null);
-        }
+        getFilesList().forEach(this::doDelete);
     }
 
     @Override
     public int size() {
-        try {
-            return (int) Files.list(directory).count();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        return (int) getFilesList().count();
     }
+
 
     @Override
     protected Path findSearchKey(String uuid) {
-        return Paths.get(directory.toFile().getAbsolutePath(), uuid);
+        return directory.resolve(uuid);
     }
 
     @Override
@@ -83,9 +78,7 @@ public class PathStorage extends AbstractStorage<Path> {
     @Override
     protected void doDelete(Path Path) {
         try {
-            if (!Files.deleteIfExists(Path)) {
-                throw new StorageException("Path delete error", Path.getFileName().toString());
-            }
+            Files.deleteIfExists(Path);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -94,12 +87,16 @@ public class PathStorage extends AbstractStorage<Path> {
     @Override
     protected List<Resume> doCopyAll() {
         List<Resume> list = new ArrayList<>();
+        getFilesList().forEach(path -> list.add(doGet(path)));
+        return list;
+    }
+
+    private Stream<Path> getFilesList() {
         try {
-            Files.list(directory).forEach(path -> list.add(doGet(path)));
+            return Files.list(directory);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        return list;
     }
 
     protected void doWrite(Resume r, OutputStream os) throws IOException {
