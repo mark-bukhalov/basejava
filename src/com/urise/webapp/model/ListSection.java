@@ -9,6 +9,9 @@ public class ListSection extends AbstractSection {
     private static final long serialVersionUID = 1L;
     private final List<String> values = new ArrayList<>();
 
+    public ListSection() {
+    }
+
     public List<String> getValues() {
         return values;
     }

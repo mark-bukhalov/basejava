@@ -1,11 +1,14 @@
 package com.urise.webapp.model;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
 import java.io.Serial;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+@XmlAccessorType(XmlAccessType.FIELD)
 public class Company implements Serializable {
     @Serial
     private static final long serialVersionUID = 1L;
@@ -13,9 +16,12 @@ public class Company implements Serializable {
     private String url;
     private final List<Period> periods = new ArrayList<>();
 
+    public Company() {
+    }
+
     public Company(String name, String url) {
-        Objects.requireNonNull(name," \"name must not be null\"");
-        Objects.requireNonNull(url," \"url must not be null\"");
+        Objects.requireNonNull(name, " \"name must not be null\"");
+        Objects.requireNonNull(url, " \"url must not be null\"");
         this.name = name;
         this.url = url;
     }

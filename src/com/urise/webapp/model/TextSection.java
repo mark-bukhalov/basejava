@@ -7,6 +7,9 @@ public class TextSection extends AbstractSection {
     private static final long serialVersionUID = 1L;
     private String value;
 
+    public TextSection() {
+    }
+
     public TextSection(String value) {
         this.value = value;
     }
