@@ -139,29 +139,29 @@ public abstract class AbstractStorageTest {
         resume.addContact(ContactType.STACKOVERFLOW, "https://stackoverflow.com/users/stackoverflow");
         resume.addContact(ContactType.HOME_PAGE, "http://homepage.ru/");
 
-        //Позиция
+//        //Позиция
         TextSection objective = new TextSection("Objective");
         resume.addSection(SectionType.OBJECTIVE, objective);
-
-        //Личные каества
+//
+//        //Личные каества
         TextSection personal = new TextSection("Personal");
         resume.addSection(SectionType.PERSONAL, personal);
-
-        //Достижения
+//
+//        //Достижения
         ListSection achievement = new ListSection();
         achievement.addValue("achievement1");
         achievement.addValue("achievement2");
         achievement.addValue("achievement3");
         resume.addSection(SectionType.ACHIEVEMENT, achievement);
-
-        //Квалификация
+//
+//        //Квалификация
         ListSection qualifications = new ListSection();
         qualifications.addValue("qualifications1");
         qualifications.addValue("qualifications2");
         qualifications.addValue("qualifications3");
         resume.addSection(SectionType.QUALIFICATIONS, qualifications);
-
-        //Опыт работы
+//
+//        //Опыт работы
         CompanySection companySection = new CompanySection();
         Company company = new Company("company1", "https://company1.ru/");
         Period period = new Period("position1", "position1 desccription1");
@@ -169,7 +169,7 @@ public abstract class AbstractStorageTest {
         period.setEndDate(LocalDate.MAX);
         company.addPeriod(period);
         companySection.addCompany(company);
-
+//
         company = new Company("company2", "https://company2.ru/");
         period = new Period("position2", "Пposition2 desccription2");
         period.setBeginDate(LocalDate.of(2009, 1, 1));
@@ -177,15 +177,18 @@ public abstract class AbstractStorageTest {
         company.addPeriod(period);
         companySection.addCompany(company);
 
-        //Образование
+        resume.addSection(SectionType.EXPERIENCE,companySection);
+
+//        //Образование
         CompanySection educationSection = new CompanySection();
         Company education = new Company("education",
                 "https://www.education.org/");
-        period = new Period("education1 desccription1");
+        period = new Period("d","education1 desccription1");
         period.setBeginDate(LocalDate.of(2013, 3, 1));
         period.setEndDate(LocalDate.of(2013, 9, 1));
         education.addPeriod(period);
         educationSection.addCompany(education);
+        resume.addSection(SectionType.EDUCATION,educationSection);
 
         return resume;
     }

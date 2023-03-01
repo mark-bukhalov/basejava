@@ -20,6 +20,9 @@ public class Period implements Serializable {
     @XmlJavaTypeAdapter(LocalDateAdapter.class)
     private LocalDate endDate;
 
+    public Period() {
+    }
+
     public Period(String name, String description, LocalDate beginDate, LocalDate endDate) {
         this.name = name;
         this.description = description;

@@ -22,7 +22,16 @@ public class Resume implements Comparable<Resume>, Serializable {
     private String uuid;
     private String fullName;
 
+    public Map<ContactType, String> getContacts() {
+        return contacts;
+    }
+
     private final Map<ContactType, String> contacts = new HashMap<>();
+
+    public Map<SectionType, AbstractSection> getSections() {
+        return sections;
+    }
+
     private final Map<SectionType, AbstractSection> sections = new HashMap<>();
 
     public Resume() {
@@ -61,12 +70,9 @@ public class Resume implements Comparable<Resume>, Serializable {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-
         Resume resume = (Resume) o;
-
-        return Objects.equals(uuid, resume.uuid);
+        return Objects.equals(uuid, resume.uuid) && Objects.equals(fullName, resume.fullName) && Objects.equals(contacts, resume.contacts) && Objects.equals(sections, resume.sections);
     }
-
     @Override
     public int hashCode() {
         return uuid.hashCode();
