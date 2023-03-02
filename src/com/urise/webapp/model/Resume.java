@@ -42,6 +42,8 @@ public class Resume implements Comparable<Resume>, Serializable {
     }
 
     public Resume(String uuid, String fullName) {
+        Objects.requireNonNull(uuid, " \"uuid must not be null\"");
+        Objects.requireNonNull(fullName, " \"fullName must not be null\"");
         this.uuid = uuid;
         this.fullName = fullName;
     }
@@ -73,6 +75,7 @@ public class Resume implements Comparable<Resume>, Serializable {
         Resume resume = (Resume) o;
         return Objects.equals(uuid, resume.uuid) && Objects.equals(fullName, resume.fullName) && Objects.equals(contacts, resume.contacts) && Objects.equals(sections, resume.sections);
     }
+
     @Override
     public int hashCode() {
         return uuid.hashCode();

@@ -6,7 +6,7 @@ import com.urise.webapp.util.XmlParser;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 
-public class XmlResumeSerializer extends AbstractResumeSerializer {
+public class XmlResumeSerializer implements ResumeSerializer {
     private XmlParser xmlParser;
 
     public XmlResumeSerializer() {

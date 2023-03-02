@@ -8,6 +8,7 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.io.Serial;
 import java.io.Serializable;
 import java.time.LocalDate;
+import java.util.Objects;
 
 @XmlAccessorType(XmlAccessType.FIELD)
 public class Period implements Serializable {
@@ -24,6 +25,10 @@ public class Period implements Serializable {
     }
 
     public Period(String name, String description, LocalDate beginDate, LocalDate endDate) {
+        Objects.requireNonNull(name, " \"name must not be null\"");
+        Objects.requireNonNull(description, " \"description must not be null\"");
+        Objects.requireNonNull(beginDate, " \"beginDate must not be null\"");
+        Objects.requireNonNull(endDate, " \"endDate must not be null\"");
         this.name = name;
         this.description = description;
         this.beginDate = beginDate;
@@ -31,6 +36,8 @@ public class Period implements Serializable {
     }
 
     public Period(String name, String description) {
+        Objects.requireNonNull(name, " \"name must not be null\"");
+        Objects.requireNonNull(description, " \"description must not be null\"");
         this.name = name;
         this.description = description;
     }

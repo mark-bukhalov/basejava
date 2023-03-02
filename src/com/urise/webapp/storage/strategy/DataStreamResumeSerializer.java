@@ -4,55 +4,62 @@ import com.urise.webapp.model.*;
 
 import java.io.*;
 import java.time.LocalDate;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
-public class DataStreamResumeSerializer extends AbstractResumeSerializer {
+public class DataStreamResumeSerializer implements ResumeSerializer {
 
     @Override
     public void doWrite(Resume r, OutputStream os) throws IOException {
         try (DataOutputStream dos = new DataOutputStream(os)) {
             dos.writeUTF(r.getUuid());
             dos.writeUTF(r.getFullName());
+
             Map<ContactType, String> contacts = r.getContacts();
-            dos.writeInt(contacts.size());
-            for (Map.Entry<ContactType, String> entry : contacts.entrySet()) {
+            writeWithException(dos, contacts.entrySet(), entry -> {
                 dos.writeUTF(entry.getKey().name());
                 dos.writeUTF(entry.getValue());
-            }
+            });
+
             Map<SectionType, AbstractSection> sections = r.getSections();
-            dos.writeInt(sections.size());
-            for (Map.Entry<SectionType, AbstractSection> entry : sections.entrySet()) {
+            writeWithException(dos, sections.entrySet(), entry -> {
                 dos.writeUTF(entry.getKey().name());
                 switch (entry.getKey()) {
                     case OBJECTIVE, PERSONAL -> dos.writeUTF(((TextSection) entry.getValue()).getValue());
                     case ACHIEVEMENT, QUALIFICATIONS -> {
                         List<String> list = ((ListSection) entry.getValue()).getValues();
-                        dos.writeInt(list.size());
-                        for (String value : list) {
-                            dos.writeUTF(value);
-                        }
+                        writeWithException(dos, list, dos::writeUTF);
                     }
                     case EXPERIENCE, EDUCATION -> {
                         List<Company> companyList = ((CompanySection) entry.getValue()).getCompanies();
-                        dos.writeInt(companyList.size());
-                        for (Company company : companyList) {
+                        writeWithException(dos, companyList, company -> {
                             dos.writeUTF(company.getName());
                             dos.writeUTF(company.getUrl());
                             List<Period> periods = company.getPeriods();
-                            dos.writeInt(periods.size());
-                            for (Period period : periods) {
+                            writeWithException(dos, periods, period -> {
                                 dos.writeUTF(period.getName());
                                 dos.writeUTF(period.getDescription());
                                 dos.writeUTF(period.getBeginDate().toString());
                                 dos.writeUTF(period.getEndDate().toString());
-                            }
-                        }
+                            });
+                        });
                     }
                 }
-
-            }
+            });
         }
+    }
+
+    private <T> void writeWithException(DataOutputStream dos, Collection<T> collection, WriteElement<T> writer) throws IOException {
+        dos.writeInt(collection.size());
+        for (T element : collection) {
+            writer.writeElement(element);
+        }
+    }
+
+    @FunctionalInterface
+    private interface WriteElement<T> {
+        void writeElement(T element) throws IOException;
     }
 
     @Override
