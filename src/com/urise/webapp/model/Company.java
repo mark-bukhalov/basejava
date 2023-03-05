@@ -14,16 +14,21 @@ public class Company implements Serializable {
     private static final long serialVersionUID = 1L;
     private String name;
     private String url;
-    private final List<Period> periods = new ArrayList<>();
+    private List<Period> periods = new ArrayList<>();
 
     public Company() {
     }
 
     public Company(String name, String url) {
         Objects.requireNonNull(name, " \"name must not be null\"");
-        Objects.requireNonNull(url, " \"url must not be null\"");
         this.name = name;
         this.url = url;
+    }
+
+    public Company(String name, String url, List<Period> periods) {
+        this.name = name;
+        this.url = url;
+        this.periods = periods;
     }
 
     @Override

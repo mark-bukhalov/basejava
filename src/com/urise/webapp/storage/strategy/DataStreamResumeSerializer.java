@@ -4,12 +4,12 @@ import com.urise.webapp.model.*;
 
 import java.io.*;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
 public class DataStreamResumeSerializer implements ResumeSerializer {
-
     @Override
     public void doWrite(Resume r, OutputStream os) throws IOException {
         try (DataOutputStream dos = new DataOutputStream(os)) {
@@ -22,8 +22,7 @@ public class DataStreamResumeSerializer implements ResumeSerializer {
                 dos.writeUTF(entry.getValue());
             });
 
-            Map<SectionType, AbstractSection> sections = r.getSections();
-            writeWithException(dos, sections.entrySet(), entry -> {
+            writeWithException(dos, r.getSections().entrySet(), entry -> {
                 dos.writeUTF(entry.getKey().name());
                 switch (entry.getKey()) {
                     case OBJECTIVE, PERSONAL -> dos.writeUTF(((TextSection) entry.getValue()).getValue());
@@ -68,44 +67,57 @@ public class DataStreamResumeSerializer implements ResumeSerializer {
             String uuid = dis.readUTF();
             String fullName = dis.readUTF();
             Resume resume = new Resume(uuid, fullName);
-            int size = dis.readInt();
-            for (int i = 0; i < size; i++) {
-                resume.addContact(ContactType.valueOf(dis.readUTF()), dis.readUTF());
-            }
-            size = dis.readInt();
-            for (int i = 0; i < size; i++) {
-                AbstractSection section = null;
+            readItems(dis, () -> resume.addContact(ContactType.valueOf(dis.readUTF()), dis.readUTF()));
+            readItems(dis, () -> {
                 SectionType sectionType = SectionType.valueOf(dis.readUTF());
+                resume.addSection(sectionType, readSection(dis, sectionType));
+            });
 
-                switch (sectionType) {
-                    case OBJECTIVE, PERSONAL -> section = new TextSection(dis.readUTF());
-                    case ACHIEVEMENT, QUALIFICATIONS -> {
-                        ListSection listSection = new ListSection();
-                        int sizeList = dis.readInt();
-                        for (int j = 0; j < sizeList; j++) {
-                            listSection.addValue(dis.readUTF());
-                        }
-                        section = listSection;
-                    }
-                    case EXPERIENCE, EDUCATION -> {
-                        CompanySection companySection = new CompanySection();
-                        int sizeList = dis.readInt();
-                        for (int j = 0; j < sizeList; j++) {
-                            Company company = new Company(dis.readUTF(), dis.readUTF());
-                            int periodCount = dis.readInt();
-                            for (int k = 0; k < periodCount; k++) {
-                                Period period = new Period(dis.readUTF(), dis.readUTF());
-                                period.setBeginDate(LocalDate.parse(dis.readUTF()));
-                                period.setBeginDate(LocalDate.parse(dis.readUTF()));
-                            }
-                            companySection.addCompany(company);
-                        }
-                        section = companySection;
-                    }
-                }
-                resume.addSection(sectionType, section);
-            }
             return resume;
         }
+    }
+
+    private void readItems(DataInputStream dis, ReadItem reader) throws IOException {
+        int size = dis.readInt();
+        for (int i = 0; i < size; i++) {
+            reader.readElement();
+        }
+    }
+
+    @FunctionalInterface
+    private interface ReadItem {
+        void readElement() throws IOException;
+    }
+
+    private <T> List<T> readList(DataInputStream dis, ReadElement<T> reader) throws IOException {
+        int size = dis.readInt();
+        List<T> list = new ArrayList<>(size);
+        for (int i = 0; i < size; i++) {
+            list.add(reader.readElement());
+        }
+        return list;
+    }
+
+    @FunctionalInterface
+    private interface ReadElement<T> {
+        T readElement() throws IOException;
+    }
+
+    private AbstractSection readSection(DataInputStream dis, SectionType sectionType) throws IOException {
+        switch (sectionType) {
+            case OBJECTIVE, PERSONAL -> {
+                return new TextSection(dis.readUTF());
+            }
+            case ACHIEVEMENT, QUALIFICATIONS -> {
+                return new ListSection(readList(dis, dis::readUTF));
+            }
+            case EXPERIENCE, EDUCATION -> {
+                return new CompanySection(
+                        readList(dis, () -> new Company(dis.readUTF(), dis.readUTF(),
+                                readList(dis, () -> new Period(dis.readUTF(), dis.readUTF(), LocalDate.parse(dis.readUTF()),
+                                        LocalDate.parse(dis.readUTF()))))));
+            }
+        }
+        return null;
     }
 }
