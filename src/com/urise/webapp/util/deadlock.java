@@ -6,9 +6,10 @@ class Table {
 public class deadlock {
     static final Table table1 = new Table();
     static final Table table2 = new Table();
+
     static public void algoritm1() {
         synchronized (table1) {
-            System.out.println("Алгоритм 1 |Работа с таблицей 1");
+            printLog(1, 1);
             try {
                 Thread.sleep(5000);
             } catch (InterruptedException e) {
@@ -16,19 +17,23 @@ public class deadlock {
             }
 
             synchronized (table2) {
-                System.out.println("Алгоритм 1 |Работа с таблицей 1");
+                printLog(1, 2);
             }
         }
     }
 
     static public void algoritm2() {
         synchronized (table2) {
-            System.out.println("Алгоритм 2 | Работа с таблицей 2");
+            printLog(2, 2);
             synchronized (table1) {
-                System.out.println("Алгоритм 2 | Работа с таблицей 1");
+                printLog(2, 1);
             }
         }
 
+    }
+
+    static public void printLog(int algoritm, int table) {
+        System.out.printf("Алгоритм %d | Работа с таблицей %d%n", algoritm, table);
     }
 
     public static void main(String[] args) {
