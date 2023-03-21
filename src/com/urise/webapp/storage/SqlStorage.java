@@ -6,22 +6,23 @@ import com.urise.webapp.sql.ConnectionFactory;
 import com.urise.webapp.sql.SqlHelper;
 
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
 
 public class SqlStorage implements Storage {
-    public final ConnectionFactory connectionFactory;
+
     private final SqlHelper sqlHelper;
 
     public SqlStorage(String dbUrl, String dbUser, String dbPassword) {
-        connectionFactory = () -> DriverManager.getConnection(dbUrl, dbUser, dbPassword);
+        ConnectionFactory connectionFactory = () -> DriverManager.getConnection(dbUrl, dbUser, dbPassword);
         sqlHelper = new SqlHelper(connectionFactory);
     }
 
     @Override
     public void clear() {
-        sqlHelper.executeRequest("DELETE FROM resume", ps -> ps.execute());
+        sqlHelper.executeRequest("DELETE FROM resume", PreparedStatement::execute);
     }
 
     @Override
@@ -76,7 +77,6 @@ public class SqlStorage implements Storage {
             List<Resume> resumes = new ArrayList<>();
             while (rs.next()) {
                 resumes.add(new Resume(rs.getString("uuid").replaceAll("\\s", ""), rs.getString("full_name").replaceAll("\\s", "")));
-                System.out.println(rs.getString("uuid") + 'A');
             }
             return resumes;
         });
