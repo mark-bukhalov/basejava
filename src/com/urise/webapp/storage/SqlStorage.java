@@ -88,16 +88,16 @@ public class SqlStorage implements Storage {
     @Override
     public List<Resume> getAllSorted() {
         return sqlHelper.executeRequest("SELECT * FROM resume r " +
-                                             "LEFT JOIN contact c " +
-                                             "ON r.uuid = c.resume_uuid " +
-                                             "ORDER BY full_name, uuid ", ps -> {
+                "LEFT JOIN contact c " +
+                "ON r.uuid = c.resume_uuid " +
+                "ORDER BY full_name, uuid ", ps -> {
             ResultSet rs = ps.executeQuery();
             Map<String, Resume> map = new LinkedHashMap<>();
             while (rs.next()) {
-                String uuid = rs.getString("uuid").replaceAll("\\s", "");
+                String uuid = rs.getString("uuid");
                 Resume resume = map.get(uuid);
                 if (resume == null) {
-                    resume = new Resume(uuid, rs.getString("full_name").replaceAll("\\s", ""));
+                    resume = new Resume(uuid, rs.getString("full_name"));
                     map.put(uuid, resume);
                 }
                 addContact(rs, resume);
@@ -110,10 +110,7 @@ public class SqlStorage implements Storage {
     public int size() {
         return sqlHelper.executeRequest("SELECT count(*) FROM resume", ps -> {
             ResultSet rs = ps.executeQuery();
-            if (rs.next()) {
-                return rs.getInt(1);
-            }
-            return 0;
+            return (rs.next() == true ? rs.getInt(1) : 0);
         });
     }
 

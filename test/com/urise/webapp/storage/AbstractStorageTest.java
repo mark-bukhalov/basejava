@@ -12,16 +12,17 @@ import org.junit.Test;
 import java.io.File;
 import java.util.Arrays;
 import java.util.List;
+import java.util.UUID;
 
 public abstract class AbstractStorageTest {
     // protected static final File STORAGE_DIR = new File("C:\\Users\\mbuhalov\\IdeaProjects\\basejava\\storageobj");
     protected static final File STORAGE_DIR = Config.get().getStorageDir();
     protected final Storage STORAGE;
 
-    private static final String UUID_1 = "uuid1";
-    private static final String UUID_2 = "uuid2";
-    private static final String UUID_3 = "uuid3";
-    private static final String UUID_4 = "uuid4";
+    private static final String UUID_1 = UUID.randomUUID().toString();
+    private static final String UUID_2 = UUID.randomUUID().toString();
+    private static final String UUID_3 = UUID.randomUUID().toString();
+    private static final String UUID_4 = UUID.randomUUID().toString();
 
     private static final String NAME_1 = "name1";
     private static final String NAME_2 = "name2";
