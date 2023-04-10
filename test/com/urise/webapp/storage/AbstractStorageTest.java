@@ -3,8 +3,7 @@ package com.urise.webapp.storage;
 import com.urise.webapp.Config;
 import com.urise.webapp.exception.ExistStorageException;
 import com.urise.webapp.exception.NotExistStorageException;
-import com.urise.webapp.model.ContactType;
-import com.urise.webapp.model.Resume;
+import com.urise.webapp.model.*;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -87,14 +86,14 @@ public abstract class AbstractStorageTest {
     @Test
     public void update() {
         String newName = "newName";
-//        String newSkype = "skype:loginNEW";
+        String newSkype = "skype:loginNEW";
         Resume resumeUpdate = new Resume(UUID_1, newName);
-//        resumeUpdate.addContact(ContactType.SKYPE, newSkype);
+        resumeUpdate.addContact(ContactType.SKYPE, newSkype);
         STORAGE.update(resumeUpdate);
         Resume updResume = STORAGE.get(UUID_1);
         Assert.assertEquals(resumeUpdate, updResume);
         Assert.assertEquals(newName, updResume.getFullName());
-//        Assert.assertEquals(newSkype, updResume.getContact(ContactType.SKYPE));
+        Assert.assertEquals(newSkype, updResume.getContact(ContactType.SKYPE));
     }
 
     @Test(expected = NotExistStorageException.class)
@@ -143,8 +142,8 @@ public abstract class AbstractStorageTest {
 //        resume.addContact(ContactType.HOME_PAGE, "http://homepage.ru/");
 //
 ////        //Позиция
-//        TextSection objective = new TextSection("Objective");
-//        resume.addSection(SectionType.OBJECTIVE, objective);
+        TextSection objective = new TextSection("Objective");
+        resume.addSection(SectionType.OBJECTIVE, objective);
 ////
 ////        //Личные каества
 //        TextSection personal = new TextSection("Personal");
@@ -158,11 +157,11 @@ public abstract class AbstractStorageTest {
 //        resume.addSection(SectionType.ACHIEVEMENT, achievement);
 ////
 ////        //Квалификация
-//        ListSection qualifications = new ListSection();
-//        qualifications.addValue("qualifications1");
-//        qualifications.addValue("qualifications2");
-//        qualifications.addValue("qualifications3");
-//        resume.addSection(SectionType.QUALIFICATIONS, qualifications);
+        ListSection qualifications = new ListSection();
+        qualifications.addValue("qualifications1");
+        qualifications.addValue("qualifications2");
+        qualifications.addValue("qualifications3");
+        resume.addSection(SectionType.QUALIFICATIONS, qualifications);
 ////
 ////        //Опыт работы
 //        CompanySection companySection = new CompanySection();

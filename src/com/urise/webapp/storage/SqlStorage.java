@@ -1,16 +1,12 @@
 package com.urise.webapp.storage;
 
 import com.urise.webapp.exception.NotExistStorageException;
-import com.urise.webapp.model.ContactType;
-import com.urise.webapp.model.Resume;
+import com.urise.webapp.model.*;
 import com.urise.webapp.sql.ConnectionFactory;
 import com.urise.webapp.sql.SqlHelper;
 
 import java.sql.*;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class SqlStorage implements Storage {
 
@@ -49,6 +45,15 @@ public class SqlStorage implements Storage {
                 }
             }
 
+            try (PreparedStatement ps = conn.prepareStatement("SELECT * FROM section " +
+                    "WHERE resume_uuid =? ")) {
+                ps.setString(1, uuid);
+                ResultSet rs = ps.executeQuery();
+                while (rs.next()) {
+                    addSection(rs, r);
+                }
+            }
+
             return r;
         });
     }
@@ -65,6 +70,8 @@ public class SqlStorage implements Storage {
             }
             deleteContacts(conn, r);
             insertContact(conn, r);
+            deleteSection(conn, r);
+            insertSection(conn, r);
             return null;
         });
     }
@@ -78,6 +85,7 @@ public class SqlStorage implements Storage {
                 ps.execute();
             }
             insertContact(conn, r);
+            insertSection(conn, r);
             return null;
         });
     }
@@ -115,6 +123,14 @@ public class SqlStorage implements Storage {
                 while (rs.next()) {
                     Resume r = map.get(rs.getString("resume_uuid"));
                     addContact(rs, r);
+                }
+            }
+
+            try (PreparedStatement ps = conn.prepareStatement("SELECT * FROM section")) {
+                ResultSet rs = ps.executeQuery();
+                while (rs.next()) {
+                    Resume r = map.get(rs.getString("resume_uuid"));
+                    addSection(rs, r);
                 }
             }
 
@@ -157,5 +173,53 @@ public class SqlStorage implements Storage {
         }
     }
 
+    private void insertSection(Connection conn, Resume r) throws SQLException {
+        try (PreparedStatement ps = conn.prepareStatement("INSERT INTO section (resume_uuid, type, content) VALUES (?,?,?)")) {
 
+            Map<SectionType, AbstractSection> sectionMap = r.getSections();
+
+            for (Map.Entry<SectionType, AbstractSection> e : sectionMap.entrySet()) {
+                ps.setString(1, r.getUuid());
+                ps.setString(2, e.getKey().name());
+                String value = null;
+                switch (e.getKey()) {
+                    case OBJECTIVE, PERSONAL -> value = (((TextSection) e.getValue()).getValue());
+                    case ACHIEVEMENT, QUALIFICATIONS -> {
+                        List<String> list = (((ListSection) e.getValue()).getValues());
+                        value = String.join("\n", list);
+                    }
+                }
+                ps.setString(3, value);
+                ps.addBatch();
+            }
+            ps.executeBatch();
+        }
+    }
+
+    private void deleteSection(Connection conn, Resume r) {
+        sqlHelper.executeRequest("DELETE  FROM section WHERE resume_uuid=?", ps -> {
+            ps.setString(1, r.getUuid());
+            ps.execute();
+            return null;
+        });
+    }
+
+    private void addSection(ResultSet rs, Resume r) throws SQLException {
+        String value = rs.getString("content");
+        if (value != null) {
+            SectionType sectionType = SectionType.valueOf(rs.getString("type"));
+
+            switch (sectionType) {
+                case OBJECTIVE, PERSONAL -> {
+                    TextSection textSection = new TextSection(value);
+                    r.addSection(sectionType, textSection);
+                }
+                case ACHIEVEMENT, QUALIFICATIONS -> {
+                    ListSection listSection = new ListSection(Arrays.stream(value.split("\n")).toList());
+                    r.addSection(sectionType, listSection);
+                }
+            }
+        }
+    }
 }
+
