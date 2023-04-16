@@ -1,12 +1,21 @@
 package com.urise.webapp.storage;
 
 import com.urise.webapp.exception.NotExistStorageException;
-import com.urise.webapp.model.*;
+import com.urise.webapp.model.AbstractSection;
+import com.urise.webapp.model.ContactType;
+import com.urise.webapp.model.Resume;
+import com.urise.webapp.model.SectionType;
 import com.urise.webapp.sql.ConnectionFactory;
 import com.urise.webapp.sql.SqlHelper;
+import com.urise.webapp.util.JsonParser;
 
 import java.sql.*;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+
+import static com.urise.webapp.util.JsonParser.write;
 
 public class SqlStorage implements Storage {
 
@@ -186,15 +195,9 @@ public class SqlStorage implements Storage {
             for (Map.Entry<SectionType, AbstractSection> e : sectionMap.entrySet()) {
                 ps.setString(1, r.getUuid());
                 ps.setString(2, e.getKey().name());
-                String value = null;
-                switch (e.getKey()) {
-                    case OBJECTIVE, PERSONAL -> value = (((TextSection) e.getValue()).getValue());
-                    case ACHIEVEMENT, QUALIFICATIONS -> {
-                        List<String> list = (((ListSection) e.getValue()).getValues());
-                        value = String.join("\n", list);
-                    }
-                }
-                ps.setString(3, value);
+                AbstractSection section = e.getValue();
+                ps.setString(3, write(section, AbstractSection.class));
+
                 ps.addBatch();
             }
             ps.executeBatch();
@@ -212,18 +215,8 @@ public class SqlStorage implements Storage {
     private void addSection(ResultSet rs, Resume r) throws SQLException {
         String value = rs.getString("content");
         if (value != null) {
-            SectionType sectionType = SectionType.valueOf(rs.getString("type"));
-
-            switch (sectionType) {
-                case OBJECTIVE, PERSONAL -> {
-                    TextSection textSection = new TextSection(value);
-                    r.addSection(sectionType, textSection);
-                }
-                case ACHIEVEMENT, QUALIFICATIONS -> {
-                    ListSection listSection = new ListSection(Arrays.stream(value.split("\n")).toList());
-                    r.addSection(sectionType, listSection);
-                }
-            }
+            SectionType type = SectionType.valueOf(rs.getString("type"));
+            r.addSection(type, JsonParser.read(value, AbstractSection.class));
         }
     }
 }
