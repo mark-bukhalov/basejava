@@ -4,11 +4,13 @@ import com.urise.webapp.Config;
 import com.urise.webapp.exception.ExistStorageException;
 import com.urise.webapp.exception.NotExistStorageException;
 import com.urise.webapp.model.*;
+import com.urise.webapp.util.DateUtil;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.io.File;
+import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
@@ -135,26 +137,26 @@ public abstract class AbstractStorageTest {
 //        //Контакты
         resume.addContact(ContactType.PHONE, "+7(999) 999-9999");
         resume.addContact(ContactType.SKYPE, "skype:login");
-//        resume.addContact(ContactType.EMAIL, "email@mail.ru");
-//        resume.addContact(ContactType.LINKEDIN, "https://www.linkedin.com/in/linkedin");
-//        resume.addContact(ContactType.GITHUB, "https://github.com/github");
-//        resume.addContact(ContactType.STACKOVERFLOW, "https://stackoverflow.com/users/stackoverflow");
-//        resume.addContact(ContactType.HOME_PAGE, "http://homepage.ru/");
-//
+        resume.addContact(ContactType.EMAIL, "email@mail.ru");
+        resume.addContact(ContactType.LINKEDIN, "https://www.linkedin.com/in/linkedin");
+        resume.addContact(ContactType.GITHUB, "https://github.com/github");
+        resume.addContact(ContactType.STACKOVERFLOW, "https://stackoverflow.com/users/stackoverflow");
+        resume.addContact(ContactType.HOME_PAGE, "http://homepage.ru/");
+
 ////        //Позиция
         TextSection objective = new TextSection("Objective");
         resume.addSection(SectionType.OBJECTIVE, objective);
 ////
 ////        //Личные каества
-//        TextSection personal = new TextSection("Personal");
-//        resume.addSection(SectionType.PERSONAL, personal);
-////
+        TextSection personal = new TextSection("Personal");
+        resume.addSection(SectionType.PERSONAL, personal);
+//
 ////        //Достижения
-//        ListSection achievement = new ListSection();
-//        achievement.addValue("achievement1");
-//        achievement.addValue("achievement2");
-//        achievement.addValue("achievement3");
-//        resume.addSection(SectionType.ACHIEVEMENT, achievement);
+        ListSection achievement = new ListSection();
+        achievement.addValue("achievement1");
+        achievement.addValue("achievement2");
+        achievement.addValue("achievement3");
+        resume.addSection(SectionType.ACHIEVEMENT, achievement);
 ////
 ////        //Квалификация
         ListSection qualifications = new ListSection();
@@ -164,33 +166,33 @@ public abstract class AbstractStorageTest {
         resume.addSection(SectionType.QUALIFICATIONS, qualifications);
 ////
 ////        //Опыт работы
-//        CompanySection companySection = new CompanySection();
-//        Company company = new Company("company1", "https://company1.ru/");
-//        Period period = new Period("position1", "position1 desccription1");
-//        period.setBeginDate(LocalDate.of(2010, 1, 1));
-//        period.setEndDate(LocalDate.MAX);
-//        company.addPeriod(period);
-//        companySection.addCompany(company);
+        CompanySection companySection = new CompanySection();
+        Company company = new Company("company1", "https://company1.ru/");
+        Period period = new Period("position1", "position1desccription1");
+        period.setBeginDate(LocalDate.of(2010, 1, 1));
+        period.setEndDate(DateUtil.NOW);
+        company.addPeriod(period);
+        companySection.addCompany(company);
 ////
-//        company = new Company("company2", "https://company2.ru/");
-//        period = new Period("position2", "Пposition2 desccription2");
-//        period.setBeginDate(LocalDate.of(2009, 1, 1));
-//        period.setEndDate(LocalDate.of(2009, 12, 31));
-//        company.addPeriod(period);
-//        companySection.addCompany(company);
-//
-//        resume.addSection(SectionType.EXPERIENCE,companySection);
+        company = new Company("company2", "https://company2.ru/");
+        period = new Period("position2", "position2desccription2");
+        period.setBeginDate(LocalDate.of(2009, 1, 1));
+        period.setEndDate(LocalDate.of(2009, 12, 31));
+        company.addPeriod(period);
+        companySection.addCompany(company);
+
+        resume.addSection(SectionType.EXPERIENCE, companySection);
 //
 ////        //Образование
-//        CompanySection educationSection = new CompanySection();
-//        Company education = new Company("education",
-//                "https://www.education.org/");
-//        period = new Period("d","education1 desccription1");
-//        period.setBeginDate(LocalDate.of(2013, 3, 1));
-//        period.setEndDate(LocalDate.of(2013, 9, 1));
-//        education.addPeriod(period);
-//        educationSection.addCompany(education);
-//        resume.addSection(SectionType.EDUCATION,educationSection);
+        CompanySection educationSection = new CompanySection();
+        Company education = new Company("education",
+                "https://www.education.org/");
+        period = new Period("d", "education1desccription1");
+        period.setBeginDate(LocalDate.of(2013, 3, 1));
+        period.setEndDate(LocalDate.of(2013, 9, 1));
+        education.addPeriod(period);
+        educationSection.addCompany(education);
+        resume.addSection(SectionType.EDUCATION, educationSection);
 
         return resume;
     }
