@@ -14,6 +14,7 @@ import java.util.Objects;
 public class Period implements Serializable {
     @Serial
     private static final long serialVersionUID = 1L;
+    public static final Period EMPTY = new Period();
     private String name;
     private String description;
     @XmlJavaTypeAdapter(LocalDateAdapter.class)

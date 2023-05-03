@@ -39,9 +39,45 @@ public class ResumeServlet extends HttpServlet {
                 storage.delete(uuid);
                 response.sendRedirect("resume");
                 return;
+            case "add":
+                r = Resume.EMPTY;
+                break;
             case "view":
             case "edit":
                 r = storage.get(uuid);
+                for (SectionType type : SectionType.values()) {
+                    AbstractSection section = r.getSection(type);
+                    switch (type) {
+                        case OBJECTIVE:
+                        case PERSONAL:
+                            if (section == null) {
+                                section = TextSection.EMPTY;
+                            }
+                            break;
+                        case ACHIEVEMENT:
+                        case QUALIFICATIONS:
+                            if (section == null) {
+                                section = ListSection.EMPTY;
+                            }
+                            break;
+                        case EXPERIENCE:
+                        case EDUCATION:
+                            CompanySection companySection = (CompanySection) section;
+                            List<Company> emptyFirstComp = new ArrayList<>();
+                            emptyFirstComp.add(Company.EMPTY);
+                            if (companySection != null) {
+                                for (Company company : companySection.getCompanies()) {
+                                    List<Period> emptyFirstPositions = new ArrayList<>();
+                                    emptyFirstPositions.add(Period.EMPTY);
+                                    emptyFirstPositions.addAll(company.getPeriods());
+                                    emptyFirstComp.add(new Company(company.getName(), company.getUrl(), emptyFirstPositions));
+                                }
+                            }
+                            section = new CompanySection(emptyFirstComp);
+                            break;
+                    }
+                    r.addSection(type, section);
+                }
                 break;
             default:
                 throw new IllegalArgumentException("Action " + action + " is illegal");
@@ -57,8 +93,16 @@ public class ResumeServlet extends HttpServlet {
         request.setCharacterEncoding("UTF-8");
         String uuid = request.getParameter("uuid");
         String fullName = request.getParameter("fullName");
-        Resume r = storage.get(uuid);
-        r.setFullName(fullName);
+
+        final boolean isCreate = (uuid == null || uuid.length() == 0);
+        Resume r;
+        if (isCreate) {
+            r = new Resume(fullName);
+        } else {
+            r = storage.get(uuid);
+            r.setFullName(fullName);
+        }
+
         for (ContactType type : ContactType.values()) {
             String value = request.getParameter(type.name());
             if (value != null && value.trim().length() != 0) {
@@ -104,7 +148,7 @@ public class ResumeServlet extends HttpServlet {
                                         positions.add(period);
                                     }
                                 }
-                                orgs.add( new Company(name, urls[i],positions));
+                                orgs.add(new Company(name, urls[i], positions));
                             }
                         }
                         r.addSection(type, new CompanySection(orgs));
@@ -113,7 +157,11 @@ public class ResumeServlet extends HttpServlet {
             }
         }
 
-        storage.update(r);
+        if (isCreate) {
+            storage.save(r);
+        } else {
+            storage.update(r);
+        }
         response.sendRedirect("resume");
     }
 }
