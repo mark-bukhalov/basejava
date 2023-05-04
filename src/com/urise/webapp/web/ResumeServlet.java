@@ -1,6 +1,7 @@
 package com.urise.webapp.web;
 
 import com.urise.webapp.Config;
+import com.urise.webapp.exception.NotExistStorageException;
 import com.urise.webapp.model.*;
 import com.urise.webapp.storage.Storage;
 import com.urise.webapp.util.DateUtil;
@@ -62,15 +63,16 @@ public class ResumeServlet extends HttpServlet {
         String uuid = request.getParameter("uuid");
         String fullName = request.getParameter("fullName");
 
-        final boolean isCreate = (uuid == null || uuid.length() == 0);
         Resume r;
-
-        if (isCreate) {
-            r = new Resume(fullName);
-        } else {
+        boolean isCreate;
+        try {
             r = storage.get(uuid);
-            r.setFullName(fullName);
+            isCreate = false;
+        } catch (NotExistStorageException er) {
+            r = new Resume(fullName);
+            isCreate = true;
         }
+        r.setFullName(fullName);
 
         for (ContactType type : ContactType.values()) {
             String value = request.getParameter(type.name());
@@ -141,6 +143,9 @@ public class ResumeServlet extends HttpServlet {
             response.sendRedirect("resume");
         } else {
             addEmptySections(r);
+//            if (isCreate){
+//                request.setAttribute("uud", r);
+//            }
             request.setAttribute("status", "");
             request.setAttribute("resume", r);
             request.setAttribute("error", error);

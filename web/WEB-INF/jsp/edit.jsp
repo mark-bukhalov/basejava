@@ -22,7 +22,7 @@
 <section>
     <c:if test="${error != null}">
         <c:forEach var="valueerror" items="${error}">
-            <p style="background-color:tomato;">${valueerror}.</p>
+            <p style="background-color:red;">${valueerror}.</p>
         </c:forEach>
     </c:if>
     <form method="post" action="resume" enctype="application/x-www-form-urlencoded">
