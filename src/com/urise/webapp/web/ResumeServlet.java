@@ -43,6 +43,8 @@ public class ResumeServlet extends HttpServlet {
                 r = Resume.EMPTY;
                 break;
             case "view":
+                r = storage.get(uuid);
+                break;
             case "edit":
                 r = storage.get(uuid);
                 for (SectionType type : SectionType.values()) {
