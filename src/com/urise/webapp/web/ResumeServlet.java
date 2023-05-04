@@ -47,47 +47,13 @@ public class ResumeServlet extends HttpServlet {
                 break;
             case "edit":
                 r = storage.get(uuid);
-                for (SectionType type : SectionType.values()) {
-                    AbstractSection section = r.getSection(type);
-                    switch (type) {
-                        case OBJECTIVE:
-                        case PERSONAL:
-                            if (section == null) {
-                                section = TextSection.EMPTY;
-                            }
-                            break;
-                        case ACHIEVEMENT:
-                        case QUALIFICATIONS:
-                            if (section == null) {
-                                section = ListSection.EMPTY;
-                            }
-                            break;
-                        case EXPERIENCE:
-                        case EDUCATION:
-                            CompanySection companySection = (CompanySection) section;
-                            List<Company> emptyFirstComp = new ArrayList<>();
-                            emptyFirstComp.add(Company.EMPTY);
-                            if (companySection != null) {
-                                for (Company company : companySection.getCompanies()) {
-                                    List<Period> emptyFirstPositions = new ArrayList<>();
-                                    emptyFirstPositions.add(Period.EMPTY);
-                                    emptyFirstPositions.addAll(company.getPeriods());
-                                    emptyFirstComp.add(new Company(company.getName(), company.getUrl(), emptyFirstPositions));
-                                }
-                            }
-                            section = new CompanySection(emptyFirstComp);
-                            break;
-                    }
-                    r.addSection(type, section);
-                }
+                addEmptySections(r);
                 break;
             default:
                 throw new IllegalArgumentException("Action " + action + " is illegal");
         }
         request.setAttribute("resume", r);
-        request.getRequestDispatcher(
-                ("view".equals(action) ? "/WEB-INF/jsp/view.jsp" : "/WEB-INF/jsp/edit.jsp")
-        ).forward(request, response);
+        request.getRequestDispatcher(("view".equals(action) ? "/WEB-INF/jsp/view.jsp" : "/WEB-INF/jsp/edit.jsp")).forward(request, response);
     }
 
     @Override
@@ -98,6 +64,7 @@ public class ResumeServlet extends HttpServlet {
 
         final boolean isCreate = (uuid == null || uuid.length() == 0);
         Resume r;
+
         if (isCreate) {
             r = new Resume(fullName);
         } else {
@@ -159,11 +126,61 @@ public class ResumeServlet extends HttpServlet {
             }
         }
 
-        if (isCreate) {
-            storage.save(r);
-        } else {
-            storage.update(r);
+        List<String> error = new ArrayList<>();
+
+        if (request.getParameter("fullName").equals("")) {
+            error.add("Заполните ФИО");
         }
-        response.sendRedirect("resume");
+
+        if (error.isEmpty()) {
+            if (isCreate) {
+                storage.save(r);
+            } else {
+                storage.update(r);
+            }
+            response.sendRedirect("resume");
+        } else {
+            addEmptySections(r);
+            request.setAttribute("status", "");
+            request.setAttribute("resume", r);
+            request.setAttribute("error", error);
+            request.getRequestDispatcher("/WEB-INF/jsp/edit.jsp").forward(request, response);
+        }
+    }
+
+    protected void addEmptySections(Resume r) {
+        for (SectionType type : SectionType.values()) {
+            AbstractSection section = r.getSection(type);
+            switch (type) {
+                case OBJECTIVE:
+                case PERSONAL:
+                    if (section == null) {
+                        section = TextSection.EMPTY;
+                    }
+                    break;
+                case ACHIEVEMENT:
+                case QUALIFICATIONS:
+                    if (section == null) {
+                        section = ListSection.EMPTY;
+                    }
+                    break;
+                case EXPERIENCE:
+                case EDUCATION:
+                    CompanySection companySection = (CompanySection) section;
+                    List<Company> emptyFirstComp = new ArrayList<>();
+                    emptyFirstComp.add(Company.EMPTY);
+                    if (companySection != null) {
+                        for (Company company : companySection.getCompanies()) {
+                            List<Period> emptyFirstPositions = new ArrayList<>();
+                            emptyFirstPositions.add(Period.EMPTY);
+                            emptyFirstPositions.addAll(company.getPeriods());
+                            emptyFirstComp.add(new Company(company.getName(), company.getUrl(), emptyFirstPositions));
+                        }
+                    }
+                    section = new CompanySection(emptyFirstComp);
+                    break;
+            }
+            r.addSection(type, section);
+        }
     }
 }

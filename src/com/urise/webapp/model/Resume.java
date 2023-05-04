@@ -72,6 +72,13 @@ public class Resume implements Comparable<Resume>, Serializable {
         return sections.get(type);
     }
 
+    public AbstractSection getSectionExc(SectionType type) {
+        if (sections.containsKey(type)) {
+            return sections.get(type);
+        }
+        throw new RuntimeException();
+    }
+
     public void addSection(SectionType type, AbstractSection section) {
         sections.put(type, section);
     }
